@@ -3,9 +3,6 @@ package gov.pension;
 import java.io.IOException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 import io.helidon.microprofile.server.Server;
