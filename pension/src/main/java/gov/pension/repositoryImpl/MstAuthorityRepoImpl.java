@@ -9,7 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import gov.pension.entity.MstAuthority;
-import gov.pension.exception.IFMSException;
+import gov.pension.exception.PensionException;
 import gov.pension.repository.MstAuthorityRepo;
 
 @Dependent
@@ -19,8 +19,10 @@ public class MstAuthorityRepoImpl implements MstAuthorityRepo{
 	
 	@Transactional
 	@Override
-	public MstAuthority saveMstAuthority(MstAuthority authority) throws IFMSException{
+	public MstAuthority saveMstAuthority(MstAuthority authority) throws PensionException  {
 		MstAuthority mstAuthority=new MstAuthority();
+		try {
+		
 		Timestamp instant= Timestamp.from(Instant.now());  
 		mstAuthority.setAuthorityId(authority.getAuthorityId());
 		mstAuthority.setAuthorityCode(authority.getAuthorityCode());
@@ -35,6 +37,9 @@ public class MstAuthorityRepoImpl implements MstAuthorityRepo{
 		mstAuthority.setModifiedBy(authority.getModifiedBy());
 		mstAuthority.setModifiedDt(instant);
 		entityManager.persist(mstAuthority);
+		}catch (Exception e) {
+			throw new PensionException(e.getMessage());
+		}
 		return mstAuthority;
 	}
 

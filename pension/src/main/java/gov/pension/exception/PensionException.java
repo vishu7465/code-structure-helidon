@@ -1,13 +1,13 @@
 package gov.pension.exception;
 
-public class IFMSException extends Exception {
+public class PensionException extends Exception {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public IFMSException(String message) {
+	public PensionException(String message) {
 		super(message);
 	}
 }

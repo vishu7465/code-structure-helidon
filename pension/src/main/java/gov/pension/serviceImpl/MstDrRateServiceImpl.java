@@ -2,8 +2,9 @@ package gov.pension.serviceImpl;
 
 import javax.inject.Inject;
 
+
 import gov.pension.entity.MstDrRate;
-import gov.pension.exception.IFMSException;
+import gov.pension.exception.PensionException;
 import gov.pension.repository.MstDrRateRepo;
 import gov.pension.service.MstDrRateService;
 
@@ -16,7 +17,7 @@ public class MstDrRateServiceImpl implements MstDrRateService{
 	
 	
 	@Override
-	public MstDrRate saveMstDrRate(MstDrRate drRate) throws IFMSException{
+	public MstDrRate saveMstDrRate(MstDrRate drRate) throws PensionException{
 				return drRateRepo.saveMstDrRate(drRate);
 	}
 

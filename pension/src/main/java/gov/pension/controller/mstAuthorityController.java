@@ -8,8 +8,9 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import gov.pension.common.ApiResponse;
+import gov.pension.common.Error;
 import gov.pension.entity.MstAuthority;
-import gov.pension.exception.IFMSException;
+import gov.pension.exception.PensionException;
 import gov.pension.service.MstAuthorityService;
 
 @Path("pension")
@@ -19,8 +20,13 @@ public class mstAuthorityController {
 
 	@Path("/saveMstAuthority")
 	@POST
-	public Response saveMstAuthority(@RequestBody MstAuthority authority) throws IFMSException {
+	public Response saveMstAuthority(@RequestBody MstAuthority authority)  {
+		try {
 		MstAuthority rateService = authorityService.saveMstAuthority(authority);
 		return Response.ok(ApiResponse.success(rateService)).build();
+		}catch (PensionException e) {
+			e.getMessage();
+		}
+		return Response.ok(ApiResponse.error(Error.create("201", "Something went wrong"))).build();
 	}
 }
