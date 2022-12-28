@@ -21,7 +21,7 @@ public class PensionRepoImpl implements MstDrRateRepo {
 
 	@Transactional
 	@Override
-	public MstDrRate saveMstDrRate(MstDrRate drRate) throws PensionException {
+	public String saveMstDrRate(MstDrRate drRate) throws PensionException {
 		MstDrRate mstDrRate = new MstDrRate();
 		try {
 		Timestamp instant = Timestamp.from(Instant.now());
@@ -43,13 +43,15 @@ public class PensionRepoImpl implements MstDrRateRepo {
 		mstDrRate.setCreatedBy(drRate.getCreatedBy());
 		mstDrRate.setCreatedDt(instant);
 		mstDrRate.setModifiedBy(drRate.getModifiedBy());
-		mstDrRate.setModifiedDt(drRate.getModifiedDt());
+		mstDrRate.setModifiedDt(instant);
 
 		entityManager.persist(mstDrRate);
+		return "Data Saved Successfully";
 		}catch (Exception e) {
+			System.out.println(e.getMessage());
 			throw new PensionException(e.getMessage());
 		}
-		return mstDrRate;
+		
 	}
 
 }

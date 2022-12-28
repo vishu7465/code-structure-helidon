@@ -1,13 +1,13 @@
 package gov.pension.service;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 
 import gov.pension.entity.MstAuthority;
 import gov.pension.exception.PensionException;
 
-@Dependent
+@ApplicationScoped
 public interface MstAuthorityService{
 
-	public MstAuthority saveMstAuthority(MstAuthority authority) throws PensionException;
+	public String saveMstAuthority(MstAuthority authority) throws PensionException;
 	
 }

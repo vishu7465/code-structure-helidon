@@ -13,7 +13,7 @@ public class MstAuthorityServiceImpl implements MstAuthorityService {
 	MstAuthorityRepo authorityRepo;
 
 	@Override
-	public MstAuthority saveMstAuthority(MstAuthority authority) throws PensionException {
+	public String saveMstAuthority(MstAuthority authority) throws PensionException {
 
 		return authorityRepo.saveMstAuthority(authority);
 	}

@@ -17,7 +17,7 @@ public class MstDrRateServiceImpl implements MstDrRateService{
 	
 	
 	@Override
-	public MstDrRate saveMstDrRate(MstDrRate drRate) throws PensionException{
+	public String saveMstDrRate(MstDrRate drRate) throws PensionException{
 				return drRateRepo.saveMstDrRate(drRate);
 	}
 

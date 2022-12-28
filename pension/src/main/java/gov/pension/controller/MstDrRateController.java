@@ -25,12 +25,12 @@ public class MstDrRateController {
 	@POST
 	public Response saveDrRateService(@RequestBody MstDrRate drRate) {
 		try {
-			MstDrRate rateService = drRateService.saveMstDrRate(drRate);
+			String rateService = drRateService.saveMstDrRate(drRate);
 			return Response.ok(ApiResponse.success(rateService)).build();
 		}catch (PensionException e) {
 			e.getMessage();
 		}
-		return Response.ok(ApiResponse.error(Error.create("201", "Something went wrong"))).build();
+		return Response.ok(ApiResponse.error(Error.create("", "Something went wrong"))).build();
 		
 		 
 	}

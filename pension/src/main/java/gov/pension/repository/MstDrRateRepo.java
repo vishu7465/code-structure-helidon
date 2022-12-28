@@ -5,6 +5,6 @@ import gov.pension.exception.PensionException;
 
 
 public interface MstDrRateRepo {
-	public MstDrRate saveMstDrRate(MstDrRate drRate) throws PensionException;
+	public String saveMstDrRate(MstDrRate drRate) throws PensionException;
 	
 }

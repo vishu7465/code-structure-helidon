@@ -5,6 +5,6 @@ import gov.pension.exception.PensionException;
 
 public interface MstAuthorityRepo {
 
-	public MstAuthority saveMstAuthority(MstAuthority authority) throws PensionException;
+	public String saveMstAuthority(MstAuthority authority) throws PensionException;
 	
 }

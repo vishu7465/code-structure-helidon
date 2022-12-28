@@ -9,6 +9,6 @@ import gov.pension.exception.PensionException;
 @Dependent
 public interface MstDrRateService{
 
-	public MstDrRate saveMstDrRate(MstDrRate drRate) throws PensionException;
+	public String saveMstDrRate(MstDrRate drRate) throws PensionException;
 	
 }

@@ -3,7 +3,7 @@ package gov.pension.repositoryImpl;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -12,14 +12,14 @@ import gov.pension.entity.MstAuthority;
 import gov.pension.exception.PensionException;
 import gov.pension.repository.MstAuthorityRepo;
 
-@Dependent
+@ApplicationScoped
 public class MstAuthorityRepoImpl implements MstAuthorityRepo{
 	@PersistenceContext
 	EntityManager entityManager;
 	
 	@Transactional
 	@Override
-	public MstAuthority saveMstAuthority(MstAuthority authority) throws PensionException  {
+	public String saveMstAuthority(MstAuthority authority) throws PensionException  {
 		MstAuthority mstAuthority=new MstAuthority();
 		try {
 		
@@ -37,10 +37,12 @@ public class MstAuthorityRepoImpl implements MstAuthorityRepo{
 		mstAuthority.setModifiedBy(authority.getModifiedBy());
 		mstAuthority.setModifiedDt(instant);
 		entityManager.persist(mstAuthority);
+		return "Data Saved Successfully";
 		}catch (Exception e) {
+			System.out.println(e.getMessage());
 			throw new PensionException(e.getMessage());
 		}
-		return mstAuthority;
+		
 	}
 
 }
