@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Helidon MP Application
+  helidon-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.helidon
+    container_name: helidon-serviceguard-app
+    ports:
+      - "8080:8080"
+      - "9000:9000"  # Metrics port
+    environment:
+      - SERVICEGUARD_API_KEY=${SERVICEGUARD_API_KEY}
+      - SERVICEGUARD_ENVIRONMENT=production
+      - SERVICEGUARD_ALERT_EMAIL=${SERVICEGUARD_ALERT_EMAIL}
+      - SERVICEGUARD_SLACK_WEBHOOK=${SERVICEGUARD_SLACK_WEBHOOK}
+      - DATABASE_URL=${DATABASE_URL:jdbc:h2:mem:test}
+      - JAVA_OPTS=-Xmx1g -Xms512m -XX:+UseG1GC
+    volumes:
+      - ./logs:/app/logs
+      - helidon_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - helidon-network
+
+  # ServiceGuard Monitoring Agent
+  serviceguard-agent:
+    image: serviceguard/monitoring-agent:latest
+    container_name: helidon-serviceguard-agent
+    environment:
+      - SERVICEGUARD_API_KEY=${SERVICEGUARD_API_KEY}
+      - SERVICEGUARD_SERVICE_NAME=helidon-microservice
+      - SERVICEGUARD_SERVICE_URL=http://helidon-app:8080
+      - SERVICEGUARD_HEALTH_ENDPOINT=/health
+      - SERVICEGUARD_METRICS_ENDPOINT=/metrics
+      - SERVICEGUARD_DETAILED_HEALTH_ENDPOINT=/serviceguard/health/detailed
+      - MONITORING_INTERVAL=30
+      - ALERT_THRESHOLD_RESPONSE_TIME=2000
+      - ALERT_THRESHOLD_ERROR_RATE=0.05
+      - ALERT_THRESHOLD_MEMORY_USAGE=0.90
+    depends_on:
+      helidon-app:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - helidon-network
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: helidon-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-helidon.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - helidon-network
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: helidon-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - helidon-network
+
+volumes:
+  helidon_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  helidon-network:
+    driver: bridge
