@@ -1,0 +1,47 @@
+# Multi-stage Docker build for Helidon MP with ServiceGuard monitoring
+FROM maven:3.9.4-openjdk-17 AS build
+
+WORKDIR /app
+
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy source code and build
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Production runtime stage
+FROM openjdk:17-jdk-slim
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Create non-root user
+RUN groupadd -r helidon && useradd -r -g helidon helidon
+
+# Copy application jar and dependencies
+COPY --from=build /app/target/libs ./libs
+COPY --from=build /app/target/*.jar app.jar
+
+# Create logs directory
+RUN mkdir -p logs && chown -R helidon:helidon /app
+
+# Switch to non-root user
+USER helidon
+
+# Expose application port
+EXPOSE 8080
+
+# Health check for ServiceGuard
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Environment variables
+ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC"
+ENV SERVICEGUARD_ENABLED=true
+
+# Run Helidon application
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
